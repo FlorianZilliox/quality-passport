@@ -39,6 +39,7 @@
       <input id="email" type="email" inputmode="email" autocomplete="email" autocapitalize="off" spellcheck="false" required>
       <p id="email-error" class="field-error" aria-live="polite"></p>
       <button id="welcome-btn" class="btn" type="submit" data-t="continue"></button>
+      <p class="notice" id="welcome-wait" data-t="checkingSlow" aria-live="polite" hidden></p>
       <p class="notice" data-t="emailNotice"></p>
     </form>
   </div>
@@ -90,6 +91,7 @@
         <p class="earned-name" id="p-earned-name"></p>
       </div>
       <p class="muted center" id="p-next" data-t="nextHint" hidden></p>
+      <p data-sync role="status" aria-live="polite" hidden></p>
       <div class="complete" id="p-complete" hidden>
         <p class="complete-title" data-t="completeTitle"></p>
         <p class="muted" data-t="completeSubtitle"></p>
@@ -131,6 +133,7 @@
         <button class="text-link on-dark" id="save-share-btn" type="button" data-t="saveOrShare" hidden></button>
         <button class="text-link on-dark" id="close-btn" type="button" data-t="close"></button>
       </div>
+      <p data-sync class="on-dark" role="status" aria-live="polite" hidden></p>
     </div>
   </div>
 </section>

@@ -37,7 +37,7 @@ Déjà en place : `assets/logo.png` (visuel complet, sur l'accueil) et `assets/l
 
 ### 4. Tester sur ton téléphone
 
-Scanne `qr/pillar-1.png` (ou affiche-le à l'écran), entre ton email, réponds. La réponse doit apparaître dans l'onglet `Responses` du Sheet en quelques secondes. L'onglet `Stars` montre les étoiles par personne.
+Scanne `qr/pillar-1.png` (ou affiche-le à l'écran), entre ton email, réponds. La réponse doit apparaître dans l'onglet `Responses` du Sheet en quelques secondes. L'onglet `Stars` montre les étoiles par personne ; le script le recalcule après chaque réponse (menu **Quality Passport > Rebuild Stars** pour le recalculer à la main).
 
 ## Les QR codes
 

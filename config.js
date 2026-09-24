@@ -32,6 +32,7 @@ export const CONFIG = {
     emailNotice: 'Answers are saved with your email and read by the Quality team.',
     continue: 'Start',
     checking: 'Checking your stars…',
+    checkingSlow: 'This can take a few seconds.',
     // Question
     pillarLabel: 'Pillar {n} of 4',
     questionIntro: 'No right or wrong answer. Just yours.',
@@ -48,6 +49,10 @@ export const CONFIG = {
     completeTitle: 'Passport complete',
     completeSubtitle: 'Show this screen to collect your goodies.',
     openPassport: 'Get my Quality Passport',
+    // Sending status (the star is lit at once; the answer is sent in the background)
+    saving: 'Saving your answer…',
+    saved: 'Answer saved',
+    waiting: 'Saved on your phone. It will be sent automatically.',
     // Celebration
     celebrationTitle: 'Four pillars. Four stars.',
     celebrationSubtitle: 'Your Quality Passport is complete.',

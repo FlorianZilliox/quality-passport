@@ -8,9 +8,13 @@ const RETRY_EVERY_MS = 30000;
 let flushing = null;
 
 /** Sends queued answers in order; stops at the first failure. */
+/** Tells the screens how sending goes: 'sending' | 'saved' | 'waiting' (queued, will retry). */
+function status(s) { window.dispatchEvent(new CustomEvent('wqw:sync', { detail: s })); }
+
 export function flush() {
   if (flushing) return flushing;
   if (!state.pending.length) return Promise.resolve();
+  status('sending');
   const run = (async () => {
     await null; // always async, so `flushing` is set before the loop can finish
     try {
@@ -22,7 +26,10 @@ export function flush() {
       }
     } catch { /* retry later */ }
   })();
-  flushing = run.finally(() => { flushing = null; });
+  flushing = run.finally(() => {
+    flushing = null;
+    status(state.pending.length ? 'waiting' : 'saved');
+  });
   return flushing;
 }
 

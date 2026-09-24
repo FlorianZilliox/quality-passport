@@ -24,9 +24,14 @@ $('welcome-form').addEventListener('submit', async (e) => {
   state.email = email;
   save();
   btn.disabled = true;
+  btn.classList.add('busy');
   btn.textContent = T.checking;
+  const slow = setTimeout(() => { $('welcome-wait').hidden = false; }, 4000);
   const ok = await restoreStars();
+  clearTimeout(slow);
+  $('welcome-wait').hidden = true;
   btn.disabled = false;
+  btn.classList.remove('busy');
   btn.textContent = T.continue;
   route();
   if (!ok) retryRestoreInBackground();

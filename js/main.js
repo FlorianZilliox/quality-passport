@@ -3,6 +3,7 @@ import { applyLogo } from './logo.js';
 import { drawPassport } from './passport/draw.js';
 import { preloadPdf } from './passport/pdf.js';
 import { restoreStars, retryRestoreInBackground, startAutoFlush } from './queue.js';
+import { initSyncStatus } from './sync-status.js';
 import { go, route } from './router.js';
 import { state, starCount, syncFromOtherTabs } from './state.js';
 import { T, applyStaticText, applyTheme, checkConfig } from './ui.js';
@@ -17,6 +18,7 @@ applyTheme();
 applyStaticText();
 checkConfig();
 applyLogo();
+initSyncStatus();
 startAutoFlush();
 // Another tab (a new QR scan) saved: take its stars and queued answers in.
 window.addEventListener('storage', (e) => { if (e.key === 'wqw_state') syncFromOtherTabs(); });
