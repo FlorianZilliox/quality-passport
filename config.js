@@ -23,7 +23,7 @@ export const CONFIG = {
   // Pillar icons available: clapper, handshake, bolt, bulb (see js/icons.js).
   TEXT: {
     // Welcome
-    welcomeTitle: 'Four pillars. Four stars.',
+    welcomeTitle: 'Get your Quality Passport',
     emailLabel: 'Your work email',
     emailInvalid: 'Please enter a valid email address.',
     emailNotice: 'Answers are saved with your email and read by the Quality team.',
@@ -39,7 +39,7 @@ export const CONFIG = {
     passportTitle: 'My Quality Passport',
     stampEarned: 'Star earned: {pillar}',     // {pillar} = pillar name
     alreadyStamped: 'You already have this star: {pillar}',
-    nextHint: 'Next pillar, next star. Scan its QR code.',
+    nextHint: 'Head to the pillar of your choice and scan its QR code.',
     scanHint: 'Scan its QR code',
     notYet: 'Not yet',
     toDiscover: 'To discover',             // a pillar stays hidden until its QR code is scanned
