@@ -122,6 +122,33 @@ test('6. new browser, same email: stars restored', async ({ page, browser }, inf
   await ctx.close();
 });
 
+test('regression QA-06: two tabs never lose each other\'s star or queued answer', async ({ page, context }) => {
+  await seed(page, { wqw_state: { email: EMAIL, stars: {}, pending: [] } }, '?p=1');
+  await visible(page, 'question');
+  const other = await context.newPage();
+  await other.goto('?p=2&mockfail=1');
+  await visible(other, 'question');
+  await other.fill('#answer', 'answer from tab B');
+  await other.click('#submit-btn');
+  await visible(other, 'passport');
+  await page.fill('#answer', 'answer from tab A');
+  await page.click('#submit-btn');
+  await visible(page, 'passport');
+  const raw = await page.evaluate(() => JSON.parse(localStorage.getItem('wqw_state')));
+  expect(Object.keys(raw.stars).sort()).toEqual(['1', '2']);
+  await expect.poll(async () => (await sheet(page)).map((r) => r[3]).sort(), { timeout: 8000 }).toContain('answer from tab A');
+  await page.goto(''); // tab B's answer, queued while failing, goes out from here
+  await expect.poll(async () => (await sheet(page)).map((r) => r[3]), { timeout: 8000 }).toContain('answer from tab B');
+});
+
+test('regression QA-01: invalid ?p never opens a question', async ({ page }) => {
+  await seed(page, { wqw_state: { email: EMAIL, stars: { 1: '2026-10-05T09:00:00Z' }, pending: [] } });
+  for (const p of ['0', '5', 'abc', '1.5', '-1', '', '%3Cscript%3E']) {
+    await page.goto(`?p=${p}`);
+    await visible(page, 'passport');
+  }
+});
+
 test('7. passport download: non-empty PDF', async ({ page }) => {
   await seed(page, { wqw_state: { email: EMAIL, stars: allStars, pending: [], celebrated: false } });
   await visible(page, 'celebration');

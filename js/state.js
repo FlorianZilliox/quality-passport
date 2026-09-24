@@ -34,8 +34,33 @@ function normalize(s) {
   };
 }
 
+// Answers this tab has confirmed as sent, so a merge never brings them back.
+const removed = new Set();
+
+/** Merges what another tab saved (QR scans often open a new tab each time):
+ *  stars and queued answers are only ever added, never lost. */
+function mergeFromDisk() {
+  const disk = normalize(read());
+  Object.entries(disk.stars).forEach(([id, ts]) => { if (!(id in state.stars)) state.stars[id] = ts; });
+  const known = new Set(state.pending.map((x) => x.id));
+  disk.pending.forEach((x) => { if (!known.has(x.id) && !removed.has(x.id)) state.pending.push(x); });
+  state.celebrated = state.celebrated || disk.celebrated;
+  if (!state.email) state.email = disk.email;
+  if (!state.holder) state.holder = disk.holder;
+}
+
 export function save() {
-  try { localStorage.setItem(KEY, JSON.stringify(state)); } catch { /* session only */ }
+  try {
+    mergeFromDisk();
+    localStorage.setItem(KEY, JSON.stringify(state));
+  } catch { /* session only */ }
+}
+
+/** Keeps this tab up to date when another tab saves. Returns true if something changed. */
+export function syncFromOtherTabs() {
+  const before = JSON.stringify(state);
+  try { mergeFromDisk(); } catch { return false; }
+  return JSON.stringify(state) !== before;
 }
 
 export const starCount = () => Object.keys(state.stars).length;
@@ -59,6 +84,7 @@ export function mergeStars(remote) {
 }
 
 export function removePending(id) {
+  removed.add(id);
   state.pending = state.pending.filter((x) => x.id !== id);
   save();
 }

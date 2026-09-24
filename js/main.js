@@ -3,7 +3,7 @@ import { applyLogo } from './logo.js';
 import { preloadPdf } from './passport/pdf.js';
 import { restoreStars, startAutoFlush } from './queue.js';
 import { go, route } from './router.js';
-import { state, starCount } from './state.js';
+import { state, starCount, syncFromOtherTabs } from './state.js';
 import { T, applyStaticText, applyTheme, checkConfig } from './ui.js';
 import { nameFromEmail } from './util.js';
 import './screens/loading.js';
@@ -17,6 +17,8 @@ applyStaticText();
 checkConfig();
 applyLogo();
 startAutoFlush();
+// Another tab (a new QR scan) saved: take its stars and queued answers in.
+window.addEventListener('storage', (e) => { if (e.key === 'wqw_state') syncFromOtherTabs(); });
 
 // Known email but no star here (new browser, cleared storage): ask the backend first.
 if (state.email && starCount() === 0) {
