@@ -46,6 +46,7 @@ register('question', {
     $('q-icon').replaceChildren(iconSvg(p.icon));
     $('q-mini-stars').replaceChildren(...IDS.map((i) => starSvg(hasStar(i))));
     answer.maxLength = CONFIG.MAX_CHARS;
+    answer.placeholder = T.answerHint;
     answer.value = '';
     update();
   },

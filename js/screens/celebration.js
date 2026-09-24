@@ -1,47 +1,39 @@
-// Celebration, "Hollywood premiere": searchlights, the 4 stars landing on the path,
-// the holder's name engraved on a Walk of Fame star, then the passport card.
+// Celebration: four stars light up on a thin line, then the passport as a certificate.
 // Shown once at the 4th star, then reachable from the passport.
-import { drawPassport } from '../passport/draw.js';
+import { CONFIG } from '../../config.js';
+import { IDS } from '../env.js';
 import { canShareFiles, downloadPassport, sharePassportFile, preloadPdf } from '../passport/pdf.js';
-import { renderPath } from '../path.js';
 import { go, register } from '../router.js';
 import { shareAchievement } from '../share.js';
 import { state, save } from '../state.js';
-import { busy } from '../ui.js';
-import { $, nameFromEmail } from '../util.js';
+import { T, busy, starSvg } from '../ui.js';
+import { $, fmt, fmtDate, nameFromEmail } from '../util.js';
 
-const screen = $('screen-celebration');
 const holder = $('holder');
-const preview = $('preview');
-let previewTimer;
-
 const holderName = () => holder.value.trim() || nameFromEmail(state.email);
 
-async function renderPreview() {
-  try { preview.src = (await drawPassport(holderName())).toDataURL('image/jpeg', 0.85); } catch { /* keep previous */ }
-}
-
 function renderName() {
-  const name = holderName();
-  const el = $('fame-name');
-  el.textContent = name;
-  el.style.fontSize = name.length > 22 ? '13px' : name.length > 14 ? '15px' : '17px';
+  $('cert-name').textContent = holderName();
 }
 
-/** Restarts every CSS animation of the screen (they run once per display). */
-function replay() {
-  screen.querySelectorAll('*').forEach((el) => {
-    el.getAnimations?.().forEach((a) => { a.cancel(); a.play(); });
-  });
+function completedOn() {
+  const dates = IDS.map((id) => state.stars[id]).filter(Boolean).sort();
+  return dates.at(-1) || new Date().toISOString();
 }
+
+$('edit-name').addEventListener('click', () => {
+  $('name-field').hidden = false;
+  $('edit-name').hidden = true;
+  holder.focus();
+  holder.select();
+});
 
 holder.addEventListener('input', () => {
   state.holder = holder.value;
   save();
   renderName();
-  clearTimeout(previewTimer);
-  previewTimer = setTimeout(renderPreview, 250);
 });
+holder.addEventListener('keydown', (e) => { if (e.key === 'Enter') holder.blur(); });
 
 $('download-btn').addEventListener('click', async (e) => {
   const btn = e.currentTarget;
@@ -65,12 +57,20 @@ register('celebration', {
   show() {
     state.celebrated = true;
     save();
-    renderPath($('c-path'), { lit: () => true });
+    $('c-stars').replaceChildren(...IDS.map(() => {
+      const w = document.createElement('span');
+      w.className = 'star-wrap';
+      w.appendChild(starSvg(true));
+      return w;
+    }));
+    $('cert-stars').replaceChildren(...IDS.map(() => starSvg(true)));
     holder.value = state.holder || nameFromEmail(state.email);
+    $('name-field').hidden = true;
+    $('edit-name').hidden = false;
     renderName();
-    renderPreview();
+    $('cert-line').textContent = fmt(T.docLine, { program: CONFIG.PROGRAM });
+    $('cert-date').textContent = fmtDate(completedOn(), 'long');
     preloadPdf();
     $('save-share-btn').hidden = !canShareFiles();
-    requestAnimationFrame(replay);
   },
 });

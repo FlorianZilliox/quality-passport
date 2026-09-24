@@ -1,5 +1,6 @@
 // Entry point: theme, texts, sync, then the first screen.
 import { applyLogo } from './logo.js';
+import { drawPassport } from './passport/draw.js';
 import { preloadPdf } from './passport/pdf.js';
 import { restoreStars, startAutoFlush } from './queue.js';
 import { go, route } from './router.js';
@@ -31,4 +32,8 @@ if (state.email && starCount() === 0) {
 setTimeout(preloadPdf, 1500);
 
 // Read-only hook for automated tests.
-window.__wqw = { state: () => structuredClone(state), nameFromEmail };
+window.__wqw = {
+  state: () => structuredClone(state),
+  nameFromEmail,
+  passportImage: async (name) => (await drawPassport(name)).toDataURL('image/jpeg', 0.9),
+};

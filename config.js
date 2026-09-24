@@ -20,43 +20,47 @@ export const CONFIG = {
     { id: 4, name: 'Quality Driving Innovation', icon: 'bulb', question: 'Duis aute irure dolor in reprehenderit in voluptate velit esse cillum?' },
   ],
   // Ipsen palette (ipsen.com). The star gold is the only non-Ipsen colour.
-  THEME: { primary: '#000e56', accent: '#2797d3', surface: '#edebe4', star: '#f5b400' },
+  THEME: { primary: '#000e56', accent: '#2797d3', surface: '#edebe4', star: '#e3a900' },
   // Pillar icons available: clapper, handshake, bolt, bulb (see js/icons.js).
   TEXT: {
     // Welcome
     welcomeTitle: 'Get your Quality Passport',
+    welcomeSubtitle: 'Four pillars, one question each. Every answer earns a star.',
     emailLabel: 'Your work email',
     emailInvalid: 'Please enter a valid email address.',
     emailNotice: 'Answers are saved with your email and read by the Quality team.',
-    continue: "Let's go",
+    continue: 'Start',
     checking: 'Checking your stars…',
     // Question
     pillarLabel: 'Pillar {n} of 4',
     questionIntro: 'No right or wrong answer. Just yours.',
-    answerHint: 'Take a moment. Your thoughts matter more than your spelling.',
+    answerHint: 'Take a moment. Your thoughts matter more than your spelling.',   // placeholder of the answer field
     submit: 'Stamp my passport',
-    myPassport: 'My passport',
+    myPassport: 'Passport',
     // Passport
     passportTitle: 'My Quality Passport',
-    stampEarned: 'Star earned: {pillar}',     // {pillar} = pillar name
-    alreadyStamped: 'You already have this star: {pillar}',
+    count: '{n} of 4',
+    starEarned: 'Star earned',
+    alreadyStamped: 'Already stamped',
     nextHint: 'Head to the pillar of your choice and scan its QR code.',
-    scanHint: 'Scan its QR code',
-    notYet: 'Not yet',
     toDiscover: 'To discover',             // a pillar stays hidden until its QR code is scanned
+    completeTitle: 'Passport complete',
+    completeSubtitle: 'Show this screen to collect your goodies.',
+    openPassport: 'Get my Quality Passport',
     // Celebration
-    celebrationTitle: 'Four pillars. Four stars. Passport complete.',
-    celebrationSubtitle: 'Your name is on the Quality walk of fame. Show this screen to collect your goodies.',
+    celebrationTitle: 'Four pillars. Four stars.',
+    celebrationSubtitle: 'Your Quality Passport is complete.',
+    editName: 'Edit name',
     holderLabel: 'Name on your passport',
     share: 'Share',
     shareText: 'Four pillars, four stars: my Quality Passport is complete. #WorldQualityWeek',
-    copied: 'Copied! Paste it anywhere.',
-    download: 'Get my Quality Passport',
-    saveOrShare: 'Save or share',
+    copied: 'Copied. Paste it anywhere.',
+    download: 'Download my passport',
+    saveOrShare: 'Share PDF',
     preparing: 'Preparing…',
     pdfFallback: 'The PDF tool could not load. Your passport was saved as an image instead.',
     close: 'Done',
-    // Passport document (PDF)
+    // Passport document (PDF and certificate)
     docTitle: 'Quality Passport',
     docCertifies: 'This certifies that',
     docLine: 'has earned the four stars of {program}',

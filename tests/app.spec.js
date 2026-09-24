@@ -48,7 +48,7 @@ test('1-4. full journey in any order, rescan, celebration', async ({ page }) => 
   await expect(page.locator('#submit-btn')).toBeEnabled();
   await page.click('#submit-btn');
   await visible(page, 'passport');
-  await expect(page.locator('#p-count')).toHaveText('1/4');
+  await expect(page.locator('#p-count')).toHaveText('1 of 4');
   await expect.poll(async () => (await sheet(page)).length).toBe(1);
   const [row] = await sheet(page);
   expect(row.slice(1, 4)).toEqual([EMAIL, 3, 'Doing it right the first time.']);
@@ -56,7 +56,7 @@ test('1-4. full journey in any order, rescan, celebration', async ({ page }) => 
   // 3. Rescan ?p=3: passport, not the question
   await page.goto('?p=3');
   await visible(page, 'passport');
-  await expect(page.locator('#p-message')).toContainText('already');
+  await expect(page.locator('#p-earned-label')).toHaveText('Already stamped');
 
   // 4. Pillars 1, 4, 2: celebration after the 4th
   await answer(page, 1);
@@ -65,7 +65,7 @@ test('1-4. full journey in any order, rescan, celebration', async ({ page }) => 
   await visible(page, 'passport');
   await answer(page, 2);
   await visible(page, 'celebration');
-  await expect(page.locator('#fame-name')).toHaveText('Helene Muller');
+  await expect(page.locator('#cert-name')).toHaveText('Helene Muller');
   await expect.poll(async () => (await sheet(page)).length).toBe(4);
   expect((await state(page)).celebrated).toBe(true);
 
@@ -82,7 +82,7 @@ test('5. offline queue: star lit, answer kept, sent after reload', async ({ page
   await page.fill('#answer', 'Sent while offline');
   await page.click('#submit-btn');
   await visible(page, 'passport');
-  await expect(page.locator('#p-count')).toHaveText('1/4');
+  await expect(page.locator('#p-count')).toHaveText('1 of 4');
   await page.waitForTimeout(1200); // mock latency + failure
   let s = await state(page);
   expect(s.pending).toHaveLength(1);
@@ -118,7 +118,7 @@ test('6. new browser, same email: stars restored', async ({ page, browser }, inf
   await other.fill('#email', EMAIL);
   await other.click('#welcome-btn');
   await visible(other, 'passport'); // pillar 3 already done elsewhere: no question
-  await expect(other.locator('#p-count')).toHaveText('2/4');
+  await expect(other.locator('#p-count')).toHaveText('2 of 4');
   await ctx.close();
 });
 
@@ -152,7 +152,9 @@ test('regression QA-01: invalid ?p never opens a question', async ({ page }) => 
 test('7. passport download: non-empty PDF', async ({ page }) => {
   await seed(page, { wqw_state: { email: EMAIL, stars: allStars, pending: [], celebrated: false } });
   await visible(page, 'celebration');
+  await page.click('#edit-name');
   await page.fill('#holder', 'Hélène Müller');
+  await expect(page.locator('#cert-name')).toHaveText('Hélène Müller');
   const [download] = await Promise.all([page.waitForEvent('download'), page.click('#download-btn')]);
   expect(download.suggestedFilename()).toBe('Quality-Passport.pdf');
   const path = await download.path();
@@ -182,10 +184,9 @@ for (const scheme of ['light', 'dark']) {
       await shot('3-passport');
       await seed(page, { wqw_state: { email: EMAIL, stars: allStars, pending: [], celebrated: false, holder: 'Hélène Müller' } });
       await visible(page, 'celebration');
-      await page.waitForTimeout(4800);
+      await page.waitForTimeout(2600);
       await shot('4-celebration');
-      await expect(page.locator('#preview')).toHaveAttribute('src', /^data:image/);
-      const src = await page.getAttribute('#preview', 'src');
+      const src = await page.evaluate(() => window.__wqw.passportImage('Hélène Müller'));
       writeFileSync(`${SHOTS}${info.project.name.replace(/\s/g, '')}-${scheme}-5-passport-document.jpg`, Buffer.from(src.split(',')[1], 'base64'));
       await page.click('#close-btn');
       await visible(page, 'passport');

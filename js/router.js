@@ -11,6 +11,7 @@ export function register(name, screen) { screens[name] = screen; }
 export function go(name, opts) {
   document.querySelectorAll('.screen').forEach((s) => { s.hidden = s.id !== `screen-${name}`; });
   document.body.style.background = name === 'celebration' ? 'var(--ipsen-navy)' : '';
+  document.querySelector('meta[name=theme-color]')?.setAttribute('content', name === 'celebration' ? '#000e56' : '#f7f6f2');
   screens[name]?.show(opts);
   window.scrollTo(0, 0);
   document.querySelector(`#screen-${name} h1`)?.focus({ preventScroll: true });

@@ -1,39 +1,48 @@
-// The 4 pillars on the cyan line (programme slide look), reused on every screen.
+// The 4 pillars on a hairline (programme slide look), dashed at the end.
+// A pillar not yet earned stays hidden ("?"): pillars are discovered one QR code at a time.
 import { CONFIG } from '../config.js';
 import { iconSvg } from './icons.js';
 import { T, starSvg } from './ui.js';
+import { fmtDate } from './util.js';
 
 /**
- * opts.lit(id) -> bool   gold ring + star badge
- * opts.current           pillar being answered (glowing ring)
- * opts.fresh             pillar just earned (slam animation)
- * Pillars not lit stay hidden ("?"): they are discovered one QR code at a time.
+ * opts.lit(id) -> bool      earned
+ * opts.date(id) -> ISO|null  shown under the name when earned
+ * opts.fresh                 pillar just earned (stamp animation)
  */
-export function renderPath(el, { lit = () => false, current = null, fresh = null } = {}) {
+export function renderPath(el, { lit = () => false, date = () => null, fresh = null } = {}) {
   el.replaceChildren(...CONFIG.PILLARS.map((p) => {
     const on = lit(p.id);
-    const shown = on || p.id === current;
     const node = document.createElement('div');
-    node.className = 'node' + (p.id === current ? ' current' : '') + (p.id === fresh ? ' fresh' : '') + (shown ? '' : ' hidden-pillar');
+    node.className = 'node' + (on ? ' on' : ' hidden-pillar') + (p.id === fresh ? ' fresh' : '');
+    node.setAttribute('role', 'img');
+    node.setAttribute('aria-label', on ? `${p.name}: star earned` : T.toDiscover);
+
     const ring = document.createElement('div');
-    ring.className = 'ring' + (on ? ' on' : '');
-    ring.appendChild(shown ? iconSvg(p.icon) : mystery());
-    if (on) {
-      const badge = starSvg(true);
-      badge.classList.add('badge');
-      ring.appendChild(badge);
+    ring.className = 'ring';
+    if (on) ring.appendChild(iconSvg(p.icon));
+    else {
+      const q = document.createElement('span');
+      q.className = 'mystery';
+      q.textContent = '?';
+      ring.appendChild(q);
     }
-    const lbl = document.createElement('div');
+
+    const slot = document.createElement('span');
+    slot.className = 'slot';
+    if (on) slot.appendChild(starSvg(true));
+
+    const lbl = document.createElement('span');
     lbl.className = 'lbl';
-    lbl.textContent = shown ? p.name : T.toDiscover;
-    node.append(ring, lbl);
+    lbl.textContent = on ? p.name : T.toDiscover;
+
+    node.append(ring, slot, lbl);
+    if (on && date(p.id)) {
+      const d = document.createElement('span');
+      d.className = 'date';
+      d.textContent = fmtDate(date(p.id));
+      node.appendChild(d);
+    }
     return node;
   }));
-}
-
-function mystery() {
-  const q = document.createElement('span');
-  q.className = 'mystery';
-  q.textContent = '?';
-  return q;
 }

@@ -10,7 +10,6 @@ export function applyTheme() {
   Object.entries(map).forEach(([k, v]) => {
     if (CONFIG.THEME?.[k]) document.documentElement.style.setProperty(v, CONFIG.THEME[k]);
   });
-  if (CONFIG.THEME?.primary) document.querySelector('meta[name=theme-color]')?.setAttribute('content', CONFIG.THEME.primary);
 }
 
 /** Fills [data-t] with TEXT keys and [data-config] with CONFIG keys. */
@@ -51,13 +50,10 @@ export function starSvg(lit) {
   path.setAttribute('stroke-linejoin', 'round');
   if (lit) {
     path.setAttribute('fill', 'var(--star)');
-    path.setAttribute('stroke', 'var(--star-edge)');
-    path.setAttribute('stroke-width', '1');
   } else {
     path.setAttribute('fill', 'none');
-    path.setAttribute('stroke', 'currentColor');
-    path.setAttribute('stroke-width', '1.4');
-    path.setAttribute('stroke-dasharray', '2.2 1.6');
+    path.setAttribute('stroke', 'var(--line-strong)');
+    path.setAttribute('stroke-width', '1.2');
   }
   svg.appendChild(path);
   return svg;
