@@ -59,3 +59,11 @@ h1:focus { outline: none; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: .001ms !important; animation-delay: 0s !important; animation-iteration-count: 1 !important; transition: none !important; }
 }
+
+/* Home: the full programme logo carries the event and programme names */
+.hero.home { text-align: center; padding-top: calc(28px + env(safe-area-inset-top, 0px)); }
+.logo-hero {
+  display: block; width: 100%; max-width: 360px; max-height: 220px; margin: 0 auto 22px;
+  object-fit: contain; filter: drop-shadow(0 0 24px rgba(63,175,235,.45));
+}
+.hero.home h1 { font-size: 32px; margin: 0; }

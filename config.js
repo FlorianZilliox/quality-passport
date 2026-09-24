@@ -23,11 +23,10 @@ export const CONFIG = {
   // Pillar icons available: clapper, handshake, bolt, bulb (see js/icons.js).
   TEXT: {
     // Welcome
-    welcomeTitle: 'Four pillars. Four stars. One Quality Passport.',
-    welcomeSubtitle: 'Stop at each pillar, share your thoughts, collect your star.',
+    welcomeTitle: 'Four pillars. Four stars.',
     emailLabel: 'Your work email',
     emailInvalid: 'Please enter a valid email address.',
-    emailNotice: 'Your answers are saved with your email and read by the Quality team.',
+    emailNotice: 'Answers are saved with your email and read by the Quality team.',
     continue: "Let's go",
     checking: 'Checking your stars…',
     // Question
