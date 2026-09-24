@@ -1,0 +1,64 @@
+// Local state, persisted in localStorage under 'wqw_state'.
+// Storage may be unavailable (private mode, in-app browsers): the app then works for the session only.
+import { IDS } from './env.js';
+import { uid } from './util.js';
+
+const KEY = 'wqw_state';
+
+/**
+ * email: lower-cased work email
+ * stars: { [pillarId]: ISO date of the answer | null when unknown }
+ * pending: answers not yet confirmed by the backend [{ id, email, p, answer, ts }]
+ * celebrated: the celebration screen was shown once
+ * holder: name typed for the passport document
+ */
+export const state = normalize(read());
+
+function read() {
+  try { return JSON.parse(localStorage.getItem(KEY)); } catch { return null; }
+}
+
+function normalize(s) {
+  s = s && typeof s === 'object' ? s : {};
+  let raw = {};
+  if (Array.isArray(s.stars)) s.stars.forEach((p) => { raw[p] = null; }); // legacy [1,3]
+  else if (s.stars && typeof s.stars === 'object') raw = s.stars;
+  const stars = {};
+  IDS.forEach((id) => { if (id in raw) stars[id] = raw[id] || null; });
+  return {
+    email: typeof s.email === 'string' ? s.email : '',
+    stars,
+    pending: Array.isArray(s.pending) ? s.pending.filter((x) => x && x.id && x.p && x.answer) : [],
+    celebrated: !!s.celebrated,
+    holder: typeof s.holder === 'string' ? s.holder : '',
+  };
+}
+
+export function save() {
+  try { localStorage.setItem(KEY, JSON.stringify(state)); } catch { /* session only */ }
+}
+
+export const starCount = () => Object.keys(state.stars).length;
+export const hasStar = (id) => id in state.stars;
+
+/** Records an answer: lights the star immediately and queues the upload. */
+export function recordAnswer(p, answer) {
+  const ts = new Date().toISOString();
+  state.stars[p] = ts;
+  state.pending.push({ id: uid(), email: state.email, p, answer, ts });
+  save();
+}
+
+/** Merges stars known by the backend ({ pillarId: ISO date }). Local dates win. */
+export function mergeStars(remote) {
+  Object.entries(remote || {}).forEach(([k, ts]) => {
+    const id = Number(k);
+    if (IDS.includes(id) && !(id in state.stars)) state.stars[id] = ts || null;
+  });
+  save();
+}
+
+export function removePending(id) {
+  state.pending = state.pending.filter((x) => x.id !== id);
+  save();
+}

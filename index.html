@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light only">
+<meta name="theme-color" content="#000e56">
+<title>Quality Passport</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23f5b400' d='M12 2l2.9 6.6 7.1.6-5.4 4.7 1.6 7L12 17.3 5.8 20.9l1.6-7L2 9.2l7.1-.6z'/%3E%3C/svg%3E">
+<link rel="preload" href="fonts/RethinkSans-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="css/tokens.css">
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/components.css">
+<link rel="stylesheet" href="css/screens.css">
+<link rel="stylesheet" href="css/celebration.css">
+<script type="module" src="js/main.js"></script>
+</head>
+<body>
+
+<!-- Loading -->
+<section id="screen-loading" class="screen hero-screen" hidden>
+  <div class="loading"><img class="logo pulse" data-logo alt=""><p id="loading-text"></p></div>
+</section>
+
+<!-- Welcome -->
+<section id="screen-welcome" class="screen" hidden>
+  <header class="hero">
+    <div class="hero-inner">
+      <div class="brand rise">
+        <img class="logo" data-logo alt="">
+        <div>
+          <p class="eyebrow" data-config="EVENT"></p>
+          <p class="program-name" data-config="PROGRAM"></p>
+        </div>
+      </div>
+      <h1 tabindex="-1" class="rise d1" data-t="welcomeTitle"></h1>
+      <p class="lead rise d2" data-t="welcomeSubtitle"></p>
+    </div>
+  </header>
+  <div class="wrap overlap">
+    <form id="welcome-form" class="card rise d4" novalidate>
+      <label for="email" data-t="emailLabel"></label>
+      <input id="email" type="email" inputmode="email" autocomplete="email" autocapitalize="off" spellcheck="false" required>
+      <p id="email-error" class="field-error" aria-live="polite"></p>
+      <button id="welcome-btn" class="btn" type="submit" data-t="continue"></button>
+      <p class="notice" data-t="emailNotice"></p>
+    </form>
+  </div>
+</section>
+
+<!-- Question -->
+<section id="screen-question" class="screen" hidden>
+  <header class="hero compact">
+    <div class="hero-inner">
+      <div class="topbar">
+        <button class="link on-dark" type="button" data-go="passport"><span aria-hidden="true">←</span> <span data-t="myPassport"></span></button>
+        <div class="mini-stars" id="q-mini-stars" aria-hidden="true"></div>
+      </div>
+      <div class="pillar-head rise">
+        <div class="ring big" id="q-icon"></div>
+        <div>
+          <p class="eyebrow" id="q-label"></p>
+          <h1 tabindex="-1" id="q-name"></h1>
+        </div>
+      </div>
+    </div>
+  </header>
+  <div class="wrap overlap">
+    <form id="question-form" class="card rise d1" novalidate>
+      <p class="intro" data-t="questionIntro"></p>
+      <label for="answer" id="q-text" class="question-text"></label>
+      <textarea id="answer" rows="6"></textarea>
+      <p id="answer-counter" class="counter" aria-live="polite"></p>
+      <p class="hint" data-t="answerHint"></p>
+      <button id="submit-btn" class="btn" type="submit" disabled data-t="submit"></button>
+    </form>
+  </div>
+</section>
+
+<!-- Passport -->
+<section id="screen-passport" class="screen" hidden>
+  <header class="hero">
+    <div class="hero-inner">
+      <div class="brand">
+        <img class="logo" data-logo alt="">
+        <div>
+          <p class="eyebrow" data-config="EVENT"></p>
+          <p class="program-name" data-config="PROGRAM"></p>
+        </div>
+      </div>
+      <div class="title-row">
+        <h1 tabindex="-1" data-t="passportTitle"></h1>
+        <p class="count" id="p-count"></p>
+      </div>
+      <div class="path large" id="p-path"></div>
+    </div>
+  </header>
+  <div class="wrap overlap">
+    <p class="message rise" id="p-message" aria-live="polite" hidden></p>
+    <ul class="stamp-list" id="stamps"></ul>
+    <p class="message info" id="p-next" data-t="nextHint" hidden></p>
+    <button class="btn gold" id="p-open-celebration" type="button" data-t="download" hidden></button>
+  </div>
+</section>
+
+<!-- Celebration: "Hollywood premiere" -->
+<section id="screen-celebration" class="screen celebration" hidden>
+  <div class="spotlights" aria-hidden="true"><i></i><i></i></div>
+  <div class="halo" aria-hidden="true"></div>
+  <div class="wrap">
+    <p class="eyebrow center" data-config="EVENT"></p>
+    <div class="path large celebrate" id="c-path" aria-hidden="true"></div>
+    <div class="fame" aria-hidden="true">
+      <svg class="fame-star" viewBox="0 0 200 190">
+        <defs>
+          <linearGradient id="fame-fill" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#0b2a9a"/><stop offset="1" stop-color="#000e56"/></linearGradient>
+          <linearGradient id="fame-gold" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffe9a8"/><stop offset=".5" stop-color="#f5b400"/><stop offset="1" stop-color="#b57f00"/></linearGradient>
+        </defs>
+        <path d="M100 6l27 58 63 7-47 43 13 62-56-32-56 32 13-62L10 71l63-7z" fill="url(#fame-fill)" stroke="url(#fame-gold)" stroke-width="6" stroke-linejoin="round"/>
+        <path d="M100 26l21 45 49 6-36 33 10 48-44-25-44 25 10-48-36-33 49-6z" fill="none" stroke="url(#fame-gold)" stroke-width="1.5" stroke-linejoin="round" opacity=".7"/>
+      </svg>
+      <div class="fame-text">
+        <span class="fame-name" id="fame-name"></span>
+        <img class="fame-logo" data-logo alt="">
+      </div>
+    </div>
+    <h1 tabindex="-1" class="center reveal" data-t="celebrationTitle"></h1>
+    <p class="lead center reveal d1" data-t="celebrationSubtitle"></p>
+    <div class="card slide-up">
+      <label for="holder" data-t="holderLabel"></label>
+      <input id="holder" type="text" autocomplete="name" maxlength="60">
+      <img id="preview" class="preview" alt="Preview of your Quality Passport">
+      <button class="btn gold shine" id="download-btn" type="button" data-t="download"></button>
+      <button class="btn outline" id="save-share-btn" type="button" data-t="saveOrShare" hidden></button>
+    </div>
+    <div class="row slide-up d1">
+      <button class="btn on-dark" id="share-btn" type="button" data-t="share"></button>
+      <button class="btn on-dark ghost" id="close-btn" type="button" data-t="close"></button>
+    </div>
+  </div>
+</section>
+
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+<noscript><p style="padding:20px">Please enable JavaScript to use the Quality Passport.</p></noscript>
+</body>
+</html>

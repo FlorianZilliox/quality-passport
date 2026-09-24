@@ -1,0 +1,25 @@
+// Runtime environment, derived once from the URL and CONFIG.
+import { CONFIG } from '../config.js';
+
+export const params = new URLSearchParams(location.search);
+export const IDS = [1, 2, 3, 4];
+// Same rule as apps-script/Code.gs. First char cannot start a spreadsheet formula.
+export const EMAIL_RE = /^[^@\s=+\-][^@\s]*@[^@\s]+\.[^@\s]+$/;
+export const IS_LOCAL = location.protocol === 'file:' ||
+  ['localhost', '127.0.0.1', '[::1]', ''].includes(location.hostname);
+export const MOCK = !CONFIG.SCRIPT_URL;
+export const MOCK_FAIL = params.get('mockfail') === '1';
+
+/** Pillar id from ?p=, or null. */
+export function pillarParam() {
+  const p = Number(params.get('p'));
+  return IDS.includes(p) ? p : null;
+}
+
+/** Removes ?p= from the address bar so a reload shows the passport, keeps other params. */
+export function dropPillarParam() {
+  if (!params.has('p')) return;
+  params.delete('p');
+  const q = params.toString();
+  try { history.replaceState(null, '', location.pathname + (q ? '?' + q : '') + location.hash); } catch { /* ignore */ }
+}

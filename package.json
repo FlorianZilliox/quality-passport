@@ -1,0 +1,19 @@
+{
+  "name": "quality-passport",
+  "private": true,
+  "type": "module",
+  "description": "World Quality Week Quality Passport: static web app (GitHub Pages) + Google Apps Script + Google Sheet",
+  "scripts": {
+    "serve": "node tests/server.mjs",
+    "test": "node --test tests/code-gs.test.mjs && playwright test",
+    "test:ui": "playwright test",
+    "test:backend": "node --test tests/code-gs.test.mjs",
+    "qr": "node qr/generate.mjs"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.63.0",
+    "jsqr": "1.4.0",
+    "pngjs": "7.0.0",
+    "qrcode": "1.5.4"
+  }
+}

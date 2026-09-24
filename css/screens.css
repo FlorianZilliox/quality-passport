@@ -1,0 +1,30 @@
+/* Question */
+.topbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+.pillar-head { display: flex; align-items: center; gap: 16px; }
+.pillar-head h1 { margin: 4px 0 0; font-size: 28px; }
+.intro { margin: 0 0 6px; font-size: 15px; font-weight: 600; color: var(--accent); }
+.question-text { font-size: 21px; line-height: 1.35; font-weight: 700; margin: 0 0 14px; }
+
+/* Passport */
+.title-row { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-bottom: 18px; }
+.title-row h1 { margin: 0; }
+.count { margin: 0; font-size: 28px; font-weight: 800; color: var(--star); white-space: nowrap; }
+.stamp-list { display: grid; gap: 10px; }
+.stamp {
+  display: flex; align-items: center; gap: 14px;
+  padding: 14px 16px; border-radius: var(--radius); background: var(--card); box-shadow: var(--shadow);
+  animation: rise .5s var(--ease-out) both;
+}
+.stamp:nth-child(2) { animation-delay: .05s; } .stamp:nth-child(3) { animation-delay: .1s; } .stamp:nth-child(4) { animation-delay: .15s; }
+.stamp .ring { width: 46px; height: 46px; background: var(--ipsen-navy); border-color: var(--ipsen-navy); }
+.stamp:not(.on) .ring { background: #fff; color: var(--line); border: 1.5px dashed var(--line); }
+.stamp-text { flex: 1; min-width: 0; }
+.stamp-name { font-weight: 800; color: var(--ink); line-height: 1.25; }
+.stamp-date { font-size: 14px; color: var(--muted); }
+.stamp .star-svg { width: 30px; height: 30px; flex: none; color: var(--line); }
+.stamp.fresh { animation: none; }
+.stamp.fresh .star-svg { animation: star-pop .7s var(--ease-spring) .2s both; }
+.stamp.fresh { box-shadow: 0 0 0 2px var(--star), var(--shadow); }
+@keyframes star-pop { 0% { transform: scale(0) rotate(-180deg); } 100% { transform: none; } }
+.stamp.locked .mystery { color: var(--line); font-size: 20px; }
+.stamp.locked .stamp-name { color: var(--muted); font-weight: 700; }
