@@ -7,7 +7,8 @@ export const IDS = [1, 2, 3, 4];
 export const EMAIL_RE = /^[^@\s=+\-][^@\s]*@[^@\s]+\.[^@\s]+$/;
 export const IS_LOCAL = location.protocol === 'file:' ||
   ['localhost', '127.0.0.1', '[::1]', ''].includes(location.hostname);
-export const MOCK = !CONFIG.SCRIPT_URL;
+// Local runs (tests, `npm run serve`) never write to the real Sheet unless ?live=1.
+export const MOCK = !CONFIG.SCRIPT_URL || (IS_LOCAL && params.get('live') !== '1');
 export const MOCK_FAIL = params.get('mockfail') === '1';
 
 /** Pillar id from ?p=, or null. */

@@ -9,16 +9,18 @@ function load() {
   const tabs = {};
   const makeSheet = (name) => {
     const rows = [];
-    const range = () => ({
-      setValues(v) { v.forEach((r, i) => { rows[i] = r.slice(); }); return this; },
+    const range = (r = 1, c = 1, nr = 1, nc = 1) => ({
+      setValues(v) { v.forEach((vr, i) => { rows[r - 1 + i] = rows[r - 1 + i] || []; vr.forEach((x, j) => { rows[r - 1 + i][c - 1 + j] = x; }); }); return this; },
+      clearContent() { for (let i = 0; i < nr; i++) if (rows[r - 1 + i]) for (let j = 0; j < nc; j++) rows[r - 1 + i][c - 1 + j] = ''; return this; },
       setFontWeight() { return this; }, setWrap() { return this; }, setHorizontalAlignment() { return this; },
-      setFormula(f) { (tabs[name].formulas ||= []).push(f); return this; },
     });
     return {
-      rows, formulas: [],
+      rows,
       appendRow(r) { rows.push(r); },
+      getLastRow() { let n = rows.length; while (n && (rows[n - 1] || []).every((x) => x === '' || x == null)) n--; return n; },
       getDataRange() { return { getValues: () => rows.map((r) => r.slice()) }; },
-      getRange: range, setFrozenRows() {}, setColumnWidth() {},
+      getRange: (a, b, c, d) => (typeof a === 'string' ? range() : range(a, b, c, d)),
+      setFrozenRows() {}, setColumnWidth() {},
     };
   };
   const ss = {
@@ -96,11 +98,24 @@ test('GET restores stars with the first date, duplicates ignored', () => {
   assert.deepEqual(get('').stars, {});
 });
 
-test('setup creates both tabs with headers and formulas', () => {
+const plain = (x) => JSON.parse(JSON.stringify(x)); // arrays from the vm have another realm's prototype
+
+test('setup creates both tabs with headers', () => {
   const { ctx, tabs } = load();
   ctx.setup();
-  // JSON round-trip: arrays created inside the vm have another realm's prototype
-  assert.deepEqual(JSON.parse(JSON.stringify(tabs.Responses.rows[0])), ['Timestamp', 'Email', 'Pillar', 'Answer', 'ClientId']);
-  assert.deepEqual(JSON.parse(JSON.stringify(tabs.Stars.rows[0])), ['Email', 1, 2, 3, 4, 'Total']);
-  assert.equal(tabs.Stars.formulas.length, 6);
+  assert.deepEqual(plain(tabs.Responses.rows[0]), ['Timestamp', 'Email', 'Pillar', 'Answer', 'ClientId']);
+  assert.deepEqual(plain(tabs.Stars.rows[0]), ['Email', 1, 2, 3, 4, 'Total']);
+});
+
+test('Stars is rebuilt after each answer: one row per email, duplicates count once', () => {
+  const { post, tabs } = load();
+  post({ email: 'b@x.co', p: 3, answer: 'x' });
+  post({ email: 'a@x.co', p: 1, answer: 'x' });
+  post({ email: 'a@x.co', p: 1, answer: 'resend after timeout' });
+  post({ email: 'a@x.co', p: 4, answer: 'x' });
+  const body = plain(tabs.Stars.rows.slice(1).filter((r) => r[0]));
+  assert.deepEqual(body, [
+    ['a@x.co', '★', '', '', '★', 2],
+    ['b@x.co', '', '', '★', '', 1],
+  ]);
 });

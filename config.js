@@ -1,12 +1,13 @@
 /* ============================================================================
    CONFIG — the only file to edit after delivery.
    - SCRIPT_URL: the Apps Script web app URL (ends with /exec).
-     Empty = mock mode (answers stay in this browser). Only acceptable locally.
+     Empty = mock mode (answers stay in this browser). On localhost the mock is always
+     used so tests never write to the real Sheet; add ?live=1 to test the real one locally.
    - Placeholder texts ("TODO", "lorem ipsum") and an empty SCRIPT_URL are reported
      as a warning in the browser console (never shown to participants).
    ========================================================================== */
 export const CONFIG = {
-  SCRIPT_URL: '',
+  SCRIPT_URL: 'https://script.google.com/macros/s/AKfycbwLHOHKuuv7Z57XVhWDW975MQNPVGs76hRxn4ZSF7AEaEvt16raksgc1a65_4ts3gt8ww/exec',
   EVENT: 'World Quality Week 2026',
   PROGRAM: 'Quality Powering Performance',   // the programme behind the 4 pillars
   LOGO: 'assets/logo.png',                   // programme visual, shown in full on the home screen

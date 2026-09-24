@@ -3,6 +3,7 @@
  *
  * Paste this file in the Sheet: Extensions > Apps Script. Then:
  *   1. Run `setup` once (authorises the script, creates the Responses and Stars tabs).
+ *      Stars is rebuilt by the script after each answer (values, no formulas).
  *   2. Deploy > New deployment > Web app: Execute as "Me", Access "Anyone".
  *   3. Copy the /exec URL into SCRIPT_URL in config.js.
  * To update later: Deploy > Manage deployments > Edit > New version (keeps the same URL).
@@ -32,7 +33,9 @@ function doPost(e) {
       return json({ ok: false, error: 'invalid' });
     }
     if (/^[=+\-@]/.test(answer)) answer = "'" + answer; // blocks formula injection
-    sheets_().responses.appendRow([new Date(), email, p, answer, id]);
+    const tabs = sheets_();
+    tabs.responses.appendRow([new Date(), email, p, answer, id]);
+    try { rebuildStars_(tabs); } catch (err) { /* the answer is saved; Stars catches up next time */ }
     return json({ ok: true });
   } catch (err) {
     return json({ ok: false, error: 'busy' });
@@ -59,11 +62,44 @@ function doGet(e) {
 
 /** Run once from the editor: authorises the script and creates both tabs. */
 function setup() {
-  sheets_();
+  rebuildStars_(sheets_());
   SpreadsheetApp.getActive().toast('Quality Passport: tabs Responses and Stars are ready.');
 }
 
-/** Returns the tabs, creating them (headers + formulas) when missing. */
+/** Menu in the Sheet: Quality Passport > Rebuild Stars. */
+function onOpen() {
+  SpreadsheetApp.getUi().createMenu('Quality Passport').addItem('Rebuild Stars', 'rebuildStars').addToUi();
+}
+
+function rebuildStars() {
+  rebuildStars_(sheets_());
+  SpreadsheetApp.getActive().toast('Stars rebuilt from Responses.');
+}
+
+/** Stars = one row per email, a star per pillar answered, and the total.
+ *  Written as plain values (no formulas), so it works whatever the Sheet's language.
+ *  Duplicates in Responses (a resend after a timeout) count once. */
+function rebuildStars_(tabs) {
+  const rows = tabs.responses.getDataRange().getValues();
+  const byEmail = {};
+  for (let i = 1; i < rows.length; i++) {
+    const email = String(rows[i][1]).toLowerCase();
+    const p = Number(rows[i][2]);
+    if (!email || [1, 2, 3, 4].indexOf(p) === -1) continue;
+    (byEmail[email] = byEmail[email] || {})[p] = true;
+  }
+  const out = Object.keys(byEmail).sort().map(function (email) {
+    const s = byEmail[email];
+    const cells = [1, 2, 3, 4].map(function (p) { return s[p] ? '★' : ''; });
+    return [email].concat(cells, [cells.filter(String).length]);
+  });
+  const stars = tabs.stars;
+  const last = stars.getLastRow();
+  if (last > 1) stars.getRange(2, 1, last - 1, 6).clearContent();
+  if (out.length) stars.getRange(2, 1, out.length, 6).setValues(out);
+}
+
+/** Returns the tabs, creating them (with headers) when missing. */
 function sheets_() {
   const ss = SpreadsheetApp.getActive();
   let responses = ss.getSheetByName(RESPONSES);
@@ -79,12 +115,6 @@ function sheets_() {
     stars = ss.insertSheet(STARS, 1);
     stars.getRange(1, 1, 1, 6).setValues([['Email', 1, 2, 3, 4, 'Total']]).setFontWeight('bold');
     stars.setFrozenRows(1);
-    stars.getRange('A2').setFormula('=SORT(UNIQUE(FILTER(Responses!B2:B, Responses!B2:B<>"")))');
-    ['B', 'C', 'D', 'E'].forEach(function (col) {
-      stars.getRange(col + '2').setFormula(
-        '=ARRAYFORMULA(IF($A2:$A="",,IF(COUNTIFS(Responses!$B:$B,$A2:$A,Responses!$C:$C,' + col + '$1)>0,"★","")))');
-    });
-    stars.getRange('F2').setFormula('=ARRAYFORMULA(IF($A2:$A="",,(B2:B="★")+(C2:C="★")+(D2:D="★")+(E2:E="★")))');
     stars.getRange('B:F').setHorizontalAlignment('center');
     stars.setColumnWidth(1, 280);
   }
