@@ -2,7 +2,7 @@
 import { applyLogo } from './logo.js';
 import { drawPassport } from './passport/draw.js';
 import { preloadPdf } from './passport/pdf.js';
-import { restoreStars, startAutoFlush } from './queue.js';
+import { restoreStars, retryRestoreInBackground, startAutoFlush } from './queue.js';
 import { go, route } from './router.js';
 import { state, starCount, syncFromOtherTabs } from './state.js';
 import { T, applyStaticText, applyTheme, checkConfig } from './ui.js';
@@ -24,7 +24,7 @@ window.addEventListener('storage', (e) => { if (e.key === 'wqw_state') syncFromO
 // Known email but no star here (new browser, cleared storage): ask the backend first.
 if (state.email && starCount() === 0) {
   go('loading', { text: T.checking });
-  restoreStars().then(route);
+  restoreStars().then((ok) => { route(); if (!ok) retryRestoreInBackground(); });
 } else {
   route();
 }

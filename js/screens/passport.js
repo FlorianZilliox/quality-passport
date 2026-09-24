@@ -7,6 +7,11 @@ import { $, fmt, pillar } from '../util.js';
 
 $('p-open-celebration').addEventListener('click', () => go('celebration'));
 
+// Stars arrived late from the backend (slow restore): refresh the passport if it is on screen.
+window.addEventListener('wqw:stars', () => {
+  if (!$('screen-passport').hidden) go('passport');
+});
+
 register('passport', {
   show({ earned = null, already = null } = {}) {
     const n = starCount();

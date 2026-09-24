@@ -35,9 +35,23 @@ export function startAutoFlush() {
   setInterval(() => { if (state.pending.length) flush(); }, RETRY_EVERY_MS);
 }
 
-/** Restores stars earned in another browser. Offline: keeps the local state. */
-export async function restoreStars() {
+/** Restores stars earned in another browser. Resolves to true when the backend answered.
+ *  Apps Script can be slow to wake up (up to ~30 s seen), hence the generous timeout. */
+export async function restoreStars(timeoutMs = 15000) {
   try {
-    mergeStars(await withTimeout(backend.stars(state.email), 8000));
-  } catch { /* offline */ }
+    const before = JSON.stringify(state.stars);
+    mergeStars(await withTimeout(backend.stars(state.email), timeoutMs));
+    if (JSON.stringify(state.stars) !== before) window.dispatchEvent(new Event('wqw:stars'));
+    return true;
+  } catch {
+    return false; // offline or slow: keep the local state
+  }
+}
+
+/** Keeps trying in the background (every 20 s, 5 times) after a failed restore. */
+export function retryRestoreInBackground(attempts = 5) {
+  if (attempts <= 0 || !state.email) return;
+  setTimeout(async () => {
+    if (!(await restoreStars(25000))) retryRestoreInBackground(attempts - 1);
+  }, 20000);
 }

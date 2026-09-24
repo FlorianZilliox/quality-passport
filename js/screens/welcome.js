@@ -1,6 +1,6 @@
 // Welcome: email, asked once per browser. Then stars are restored from the backend.
 import { EMAIL_RE } from '../env.js';
-import { restoreStars } from '../queue.js';
+import { restoreStars, retryRestoreInBackground } from '../queue.js';
 import { register, route } from '../router.js';
 import { state, save } from '../state.js';
 import { T } from '../ui.js';
@@ -25,10 +25,11 @@ $('welcome-form').addEventListener('submit', async (e) => {
   save();
   btn.disabled = true;
   btn.textContent = T.checking;
-  await restoreStars();
+  const ok = await restoreStars();
   btn.disabled = false;
   btn.textContent = T.continue;
   route();
+  if (!ok) retryRestoreInBackground();
 });
 
 register('welcome', {
