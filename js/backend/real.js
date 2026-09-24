@@ -3,7 +3,8 @@
 // redirect to script.googleusercontent.com, where the JSON answer lives.
 import { CONFIG } from '../../config.js';
 
-const TIMEOUT_MS = 20000;
+// Apps Script sometimes needs ~30 s; a resend after a timeout is ignored by the script (same ClientId).
+const TIMEOUT_MS = 35000;
 
 /** Resolves to 'ok' (saved), 'drop' (rejected for good) or 'retry'. */
 export async function send(item) {

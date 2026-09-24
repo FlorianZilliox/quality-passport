@@ -34,6 +34,8 @@ function doPost(e) {
     }
     if (/^[=+\-@]/.test(answer)) answer = "'" + answer; // blocks formula injection
     const tabs = sheets_();
+    // A resend (Google's reply was slow or lost, but the row was written) is not appended twice.
+    if (id && alreadySaved_(tabs.responses, id)) return json({ ok: true, duplicate: true });
     tabs.responses.appendRow([new Date(), email, p, answer, id]);
     try { rebuildStars_(tabs); } catch (err) { /* the answer is saved; Stars catches up next time */ }
     return json({ ok: true });
@@ -58,6 +60,15 @@ function doGet(e) {
     }
   }
   return json({ stars: stars });
+}
+
+/** True when a row with this ClientId (column E) already exists. */
+function alreadySaved_(responses, id) {
+  const last = responses.getLastRow();
+  if (last < 2) return false;
+  const ids = responses.getRange(2, 5, last - 1, 1).getValues();
+  for (let i = ids.length - 1; i >= 0; i--) if (String(ids[i][0]) === id) return true;
+  return false;
 }
 
 /** Run once from the editor: authorises the script and creates both tabs. */

@@ -10,6 +10,7 @@ function load() {
   const makeSheet = (name) => {
     const rows = [];
     const range = (r = 1, c = 1, nr = 1, nc = 1) => ({
+      getValues() { return Array.from({ length: nr }, (_, i) => Array.from({ length: nc }, (_, j) => (rows[r - 1 + i] || [])[c - 1 + j] ?? '')); },
       setValues(v) { v.forEach((vr, i) => { rows[r - 1 + i] = rows[r - 1 + i] || []; vr.forEach((x, j) => { rows[r - 1 + i][c - 1 + j] = x; }); }); return this; },
       clearContent() { for (let i = 0; i < nr; i++) if (rows[r - 1 + i]) for (let j = 0; j < nc; j++) rows[r - 1 + i][c - 1 + j] = ''; return this; },
       setFontWeight() { return this; }, setWrap() { return this; }, setHorizontalAlignment() { return this; },
@@ -118,4 +119,14 @@ test('Stars is rebuilt after each answer: one row per email, duplicates count on
     ['a@x.co', '★', '', '', '★', 2],
     ['b@x.co', '', '', '★', '', 1],
   ]);
+});
+
+test('a resend with the same ClientId is not appended twice', () => {
+  const { post, tabs } = load();
+  assert.equal(post({ email: 'a@x.co', p: 2, answer: 'first try', id: 'abc-123' }).ok, true);
+  const again = post({ email: 'a@x.co', p: 2, answer: 'first try', id: 'abc-123' });
+  assert.equal(again.ok, true);
+  assert.equal(tabs.Responses.rows.filter((r) => r[4] === 'abc-123').length, 1);
+  post({ email: 'a@x.co', p: 3, answer: 'other', id: 'def-456' });
+  assert.equal(tabs.Responses.rows.length, 3); // header + 2
 });
