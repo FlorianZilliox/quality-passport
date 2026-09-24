@@ -103,5 +103,5 @@
   clip-path: inset(0 100% 0 0); animation: engrave 1s steps(18, end) 2.6s both;
 }
 @keyframes engrave { to { clip-path: inset(0 0 0 0); } }
-.fame-logo { width: 34px; height: 34px; object-fit: contain; opacity: 0; animation: fade-in .6s ease-out 3.4s both; }
+.fame-logo { width: 38px; height: 38px; object-fit: cover; border-radius: 50%; box-shadow: 0 0 0 2px #f5b400; opacity: 0; animation: fade-in .6s ease-out 3.4s both; }
 @keyframes fame-in { 0% { transform: scale(.3) rotate(-30deg); opacity: 0; } 100% { transform: none; opacity: 1; } }

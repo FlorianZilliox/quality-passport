@@ -9,7 +9,8 @@ export const CONFIG = {
   SCRIPT_URL: '',
   EVENT: 'World Quality Week 2026',
   PROGRAM: 'Quality Powering Performance',   // the programme behind the 4 pillars
-  LOGO: 'assets/logo.png',                   // programme visual; if the file is missing, a drawn Q emblem is used
+  LOGO: 'assets/logo.png',                   // programme visual, shown in full on the home screen
+  LOGO_MARK: 'assets/logo-mark.png',         // square crop of the Q, for round medallions (headers, star, PDF)
   MIN_CHARS: 1,
   MAX_CHARS: 2000,
   PILLARS: [

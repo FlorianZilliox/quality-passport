@@ -31,9 +31,9 @@ Tout se modifie dans [`config.js`](config.js), le seul fichier à toucher :
 
 Tant qu'il reste du lorem ipsum ou un `TODO`, ou si `SCRIPT_URL` est vide, un avertissement apparaît dans la console du navigateur (jamais à l'écran des participants).
 
-### 3. Ajouter le visuel du programme
+### 3. Visuel du programme
 
-Dépose l'image (le « Q » bleu) dans le dossier `assets/` sous le nom **`logo.png`** (dans GitHub : **Add file > Upload files**, dossier `assets`). Elle apparaît alors sur l'accueil, la célébration et le PDF. Sans ce fichier, un emblème « Q » dessiné est utilisé.
+Déjà en place : `assets/logo.png` (visuel complet, sur l'accueil) et `assets/logo-mark.png` (le « Q » recadré en carré, pour les médaillons ronds et le PDF). Pour changer de visuel, remplace ces deux fichiers en gardant leurs noms.
 
 ### 4. Tester sur ton téléphone
 
@@ -54,6 +54,7 @@ Téléphone (GitHub Pages)  --POST réponse-->  Apps Script  -->  Sheet « Respo
 - L'étoile s'allume tout de suite ; l'envoi part en arrière-plan. Si le wifi tombe, la réponse attend dans le téléphone et repart automatiquement.
 - Changement de navigateur (scanner intégré, autre téléphone) : les étoiles sont retrouvées grâce à l'email.
 - Les piliers se découvrent au fur et à mesure : un pilier non scanné reste « To discover ».
+- Une question ne s'ouvre qu'en scannant son QR code : l'app ne propose jamais de passer d'un pilier à l'autre.
 - Après la 4ᵉ étoile : célébration « Walk of Fame », puis le Quality Passport en PDF (nom modifiable, accents gérés).
 
 ## Organisation du code

@@ -124,13 +124,17 @@ export async function drawPassport(name) {
   ctx.strokeRect(74, 74, W - 148, H - 148);
 
   // Header: programme visual, event, title
-  const logo = await loadLogo();
-  if (logo) {
-    const lh = 104;
-    const lw = Math.min(lh * (logo.naturalWidth || 1) / (logo.naturalHeight || 1), 260);
-    ctx.fillStyle = primary; // navy medallion so a dark or light logo both read
-    ctx.beginPath(); ctx.arc(W / 2, 150, 66, 0, Math.PI * 2); ctx.fill();
-    try { ctx.drawImage(logo, W / 2 - lw / 2, 150 - lh / 2, lw, lh); } catch { /* ignore */ }
+  const logo = await loadLogo('mark');
+  if (logo) { // round medallion with a navy ring
+    const r = 70;
+    ctx.save();
+    ctx.beginPath(); ctx.arc(W / 2, 150, r, 0, Math.PI * 2); ctx.clip();
+    const k = Math.max((2 * r) / logo.naturalWidth, (2 * r) / logo.naturalHeight); // cover
+    const w = logo.naturalWidth * k, h = logo.naturalHeight * k;
+    try { ctx.drawImage(logo, W / 2 - w / 2, 150 - h / 2, w, h); } catch { /* ignore */ }
+    ctx.restore();
+    ctx.strokeStyle = primary; ctx.lineWidth = 6;
+    ctx.beginPath(); ctx.arc(W / 2, 150, r, 0, Math.PI * 2); ctx.stroke();
   }
   ctx.fillStyle = accent;
   ctx.font = `700 28px ${FONT}`;
