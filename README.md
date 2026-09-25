@@ -37,11 +37,13 @@ Déjà en place : `assets/logo.png` (visuel complet, sur l'accueil) et `assets/l
 
 ### 4. Tester sur ton téléphone
 
-Scanne `qr/pillar-1.png` (ou affiche-le à l'écran), entre ton email, réponds. La réponse doit apparaître dans l'onglet `Responses` du Sheet en quelques secondes. L'onglet `Stars` montre les étoiles par personne ; le script le recalcule après chaque réponse (menu **Quality Passport > Rebuild Stars** pour le recalculer à la main).
+Scanne `qr/pilier-1.png` (ou affiche-le à l'écran), entre ton email, réponds. La réponse doit apparaître dans l'onglet `Responses` du Sheet en quelques secondes. L'onglet `Stars` montre les étoiles par personne ; le script le recalcule après chaque réponse (menu **Quality Passport > Rebuild Stars** pour le recalculer à la main).
 
 ## Les QR codes
 
-Dans [`qr/`](qr/) : `pillar-1` à `pillar-4` (une question chacun) et `passport` (le passeport, pour l'accueil). Pour l'impression, chaque QR existe en **SVG** (vectoriel, net à toute taille : à donner à l'imprimeur) et en **PNG 4096 px** (environ 35 cm à 300 dpi). Garder une zone blanche autour du code et un format d'au moins 3 cm de côté. Ils pointent vers l'adresse GitHub Pages ci-dessus, qui ne changera pas : tu peux les imprimer dès maintenant, même si les questions changent ensuite.
+Dans [`qr/`](qr/) : `pilier-1` à `pilier-4` (une question chacun) et `passeport` (le passeport, pour l'accueil). Chaque code porte son étiquette imprimée dessous (« Pilier 1 »… « Passeport »). Pour l'impression, chacun existe en **SVG** (vectoriel, net à toute taille : à donner à l'imprimeur) et en **PNG 4096 px de large** (environ 35 cm à 300 dpi). Garder la marge blanche autour du code et au moins 3 cm de côté.
+
+Ils pointent vers https://quality-passport.github.io/quality-passport/ : cette adresse ne change plus, même si les questions changent.
 
 ## Comment ça marche
 
