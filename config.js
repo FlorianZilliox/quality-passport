@@ -15,10 +15,10 @@ export const CONFIG = {
   MIN_CHARS: 1,
   MAX_CHARS: 2000,
   PILLARS: [
-    { id: 1, name: 'Quality as Enabler', icon: 'clapper', question: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit?' },
-    { id: 2, name: 'Building Trust', icon: 'handshake', question: 'Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua?' },
-    { id: 3, name: 'Efficiency & Speed', icon: 'bolt', question: 'Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris?' },
-    { id: 4, name: 'Quality Driving Innovation', icon: 'bulb', question: 'Duis aute irure dolor in reprehenderit in voluptate velit esse cillum?' },
+    { id: 1, name: 'Quality as Enabler', icon: 'clapper', question: 'Tell us what you took away from it.' },
+    { id: 2, name: 'Building Trust', icon: 'handshake', question: 'Tell us what you took away from it.' },
+    { id: 3, name: 'Efficiency & Speed', icon: 'bolt', question: 'Tell us what you took away from it.' },
+    { id: 4, name: 'Quality Driving Innovation', icon: 'bulb', question: 'Tell us what you took away from it.' },
   ],
   // Ipsen palette (ipsen.com). The star gold is the only non-Ipsen colour.
   THEME: { primary: '#000e56', accent: '#2797d3', surface: '#edebe4', star: '#e3a900' },
