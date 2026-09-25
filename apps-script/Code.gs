@@ -9,7 +9,7 @@
  * To update later: Deploy > Manage deployments > Edit > New version (keeps the same URL).
  *
  * Routes
- *   POST (text/plain JSON {email, p, answer, id}) -> {ok:true} | {ok:false, error:'invalid'|'busy'}
+ *   POST (text/plain JSON {email, p, answer, id}) -> {ok:true[, duplicate:true]} | {ok:false, error:'invalid'|'busy'}
  *   GET  ?email=...                                -> {stars: {"1": "ISO date of first answer", ...}}
  */
 
@@ -20,27 +20,49 @@ const MAX_ANSWER = 2000;
 const EMAIL_RE = /^[^@\s=+\-][^@\s]*@[^@\s]+\.[^@\s]+$/;
 
 function doPost(e) {
+  let d;
+  try { d = JSON.parse(e.postData.contents); } catch (err) { return json({ ok: false, error: 'invalid' }); }
+  const email = String(d.email || '').trim().toLowerCase().slice(0, 254);
+  const p = Number(d.p);
+  let answer = String(d.answer || '').trim().slice(0, MAX_ANSWER);
+  const id = String(d.id || '').replace(/[^A-Za-z0-9-]/g, '').slice(0, 40);
+  if (!EMAIL_RE.test(email) || [1, 2, 3, 4].indexOf(p) === -1 || !answer) {
+    return json({ ok: false, error: 'invalid' });
+  }
+  if (/^[=+\-@]/.test(answer)) answer = "'" + answer; // blocks formula injection
+
+  // Critical section kept as short as possible: duplicate check + one appendRow.
   const lock = LockService.getScriptLock();
+  let tabs;
   try {
-    if (!lock.tryLock(10000)) return json({ ok: false, error: 'busy' });
-    let d;
-    try { d = JSON.parse(e.postData.contents); } catch (err) { return json({ ok: false, error: 'invalid' }); }
-    const email = String(d.email || '').trim().toLowerCase().slice(0, 254);
-    const p = Number(d.p);
-    let answer = String(d.answer || '').trim().slice(0, MAX_ANSWER);
-    const id = String(d.id || '').replace(/[^A-Za-z0-9-]/g, '').slice(0, 40);
-    if (!EMAIL_RE.test(email) || [1, 2, 3, 4].indexOf(p) === -1 || !answer) {
-      return json({ ok: false, error: 'invalid' });
-    }
-    if (/^[=+\-@]/.test(answer)) answer = "'" + answer; // blocks formula injection
-    const tabs = sheets_();
+    if (!lock.tryLock(30000)) return json({ ok: false, error: 'busy' });
+    tabs = sheets_();
     // A resend (Google's reply was slow or lost, but the row was written) is not appended twice.
     if (id && alreadySaved_(tabs.responses, id)) return json({ ok: true, duplicate: true });
     tabs.responses.appendRow([new Date(), email, p, answer, id]);
-    try { rebuildStars_(tabs); } catch (err) { /* the answer is saved; Stars catches up next time */ }
-    return json({ ok: true });
+    SpreadsheetApp.flush();
   } catch (err) {
     return json({ ok: false, error: 'busy' });
+  } finally {
+    lock.releaseLock();
+  }
+  // The answer is saved. Stars is refreshed outside the lock, once for a burst of answers.
+  try { refreshStars_(tabs); } catch (err) { /* Stars catches up on the next answer */ }
+  return json({ ok: true });
+}
+
+/** Rebuilds Stars unless another execution is already doing it; that one then runs
+ *  once more, so answers arriving during a rebuild are never left out. */
+function refreshStars_(tabs) {
+  const props = PropertiesService.getScriptProperties();
+  props.setProperty('starsDirty', '1');
+  const lock = LockService.getDocumentLock();
+  if (!lock.tryLock(0)) return; // someone else is rebuilding and will see the flag
+  try {
+    for (let i = 0; i < 5 && props.getProperty('starsDirty') === '1'; i++) {
+      props.deleteProperty('starsDirty');
+      rebuildStars_(tabs);
+    }
   } finally {
     lock.releaseLock();
   }

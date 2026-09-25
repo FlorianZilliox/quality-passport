@@ -25,14 +25,20 @@ function load() {
     };
   };
   const ss = {
+    flushCalls: 0,
     getSheetByName: (n) => tabs[n] || null,
     insertSheet: (n) => (tabs[n] = makeSheet(n)),
     toast() {},
   };
   let locked = false;
+  const props = {};
   const ctx = {
-    SpreadsheetApp: { getActive: () => ss },
-    LockService: { getScriptLock: () => ({ tryLock: () => !locked, releaseLock() {} }) },
+    SpreadsheetApp: { getActive: () => ss, flush() {} },
+    LockService: {
+      getScriptLock: () => ({ tryLock: () => !locked, releaseLock() {} }),
+      getDocumentLock: () => ({ tryLock: () => true, releaseLock() {} }),
+    },
+    PropertiesService: { getScriptProperties: () => ({ setProperty(k, v) { props[k] = v; }, getProperty: (k) => props[k] ?? null, deleteProperty(k) { delete props[k]; } }) },
     ContentService: {
       MimeType: { JSON: 'json' },
       createTextOutput: (s) => ({ body: s, setMimeType() { return this; } }),

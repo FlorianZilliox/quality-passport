@@ -8,6 +8,13 @@ const RETRY_EVERY_MS = 30000;
 let flushing = null;
 
 /** Sends queued answers in order; stops at the first failure. */
+// Busy or failed send: try again after 4 to 10 s (random, so a crowd does not resend at the same instant).
+let soon = null;
+function retrySoon() {
+  if (soon) return;
+  soon = setTimeout(() => { soon = null; flush(); }, 4000 + Math.random() * 6000);
+}
+
 /** Tells the screens how sending goes: 'sending' | 'saved' | 'waiting' (queued, will retry). */
 function status(s) { window.dispatchEvent(new CustomEvent('wqw:sync', { detail: s })); }
 
@@ -21,7 +28,7 @@ export function flush() {
       while (state.pending.length) {
         const item = state.pending[0];
         const r = await backend.send(item);
-        if (r === 'retry') break;
+        if (r === 'retry') { retrySoon(); break; }
         removePending(item.id); // 'ok' or 'drop' (invalid for good)
       }
     } catch { /* retry later */ }
