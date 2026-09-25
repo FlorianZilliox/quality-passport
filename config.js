@@ -7,7 +7,7 @@
      as a warning in the browser console (never shown to participants).
    ========================================================================== */
 export const CONFIG = {
-  SCRIPT_URL: 'https://script.google.com/macros/s/AKfycbwLHOHKuuv7Z57XVhWDW975MQNPVGs76hRxn4ZSF7AEaEvt16raksgc1a65_4ts3gt8ww/exec',
+  SCRIPT_URL: 'https://script.google.com/macros/s/AKfycbzDTdpoL5_6mBIXthxlWw5TwwDQQZV3ahH8FeL8g1b0rTMb3lqSg-o_sDfGZLWoC_BqKQ/exec',
   EVENT: 'World Quality Week 2026',
   PROGRAM: 'Quality Powering Performance',   // the programme behind the 4 pillars
   LOGO: 'assets/logo.png',                   // programme visual, shown in full on the home screen
