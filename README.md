@@ -2,7 +2,7 @@
 
 Web app statique qui remplace le passeport papier : un QR code par pilier, une question ouverte, une étoile par réponse, et un Quality Passport en PDF après les 4 étoiles. Programme : **Quality Powering Performance**.
 
-- App en ligne : https://florianzilliox.github.io/quality-passport/
+- App en ligne : https://quality-passport.github.io/quality-passport/
 - Réponses : Google Sheet « Quality Report » (onglets `Responses` et `Stars`)
 
 ## Ce qu'il te reste à faire, dans l'ordre
@@ -84,7 +84,7 @@ npm install
 npx playwright install webkit chromium
 npm run serve          # http://localhost:4173  (mode simulé tant que SCRIPT_URL est vide)
 npm test               # tests du script Google + 8 scénarios Playwright (iPhone 13, Pixel 7)
-npm run qr -- https://florianzilliox.github.io/quality-passport/
+npm run qr -- https://quality-passport.github.io/quality-passport/
 ```
 
 Mode simulé : quand `SCRIPT_URL` est vide, les réponses sont stockées dans le navigateur (clé `wqw_mock_sheet`). `?mockfail=1` fait échouer chaque envoi pour tester la file d'attente. L'app doit être servie en http (pas ouverte en double-cliquant `index.html`), car elle utilise des modules JavaScript.

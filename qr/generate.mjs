@@ -8,7 +8,7 @@ import { fileURLToPath } from 'node:url';
 
 const base = process.argv[2];
 if (!base || !/^https:\/\/\S+$/.test(base)) {
-  console.error('Please give the public address of the app, for example:\n  node qr/generate.mjs https://florianzilliox.github.io/quality-passport/');
+  console.error('Please give the public address of the app, for example:\n  node qr/generate.mjs https://quality-passport.github.io/quality-passport/');
   process.exit(1);
 }
 
