@@ -163,6 +163,15 @@ test('7. passport download: non-empty PDF', async ({ page }) => {
   expect(buf.subarray(0, 5).toString()).toBe('%PDF-');
 });
 
+test('Share: shares the PDF, or downloads it where files cannot be shared', async ({ page }) => {
+  await page.addInitScript(() => { delete Navigator.prototype.canShare; delete Navigator.prototype.share; });
+  await seed(page, { wqw_state: { email: EMAIL, stars: allStars, pending: [], celebrated: false } });
+  await visible(page, 'celebration');
+  await expect(page.locator('#share-btn')).toHaveText('Share');
+  const [download] = await Promise.all([page.waitForEvent('download'), page.click('#share-btn')]);
+  expect(download.suggestedFilename()).toBe('Quality-Passport.pdf');
+});
+
 for (const scheme of ['light', 'dark']) {
   test.describe(`8. screenshots (${scheme})`, () => {
     test.use({ colorScheme: scheme });

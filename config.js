@@ -58,11 +58,8 @@ export const CONFIG = {
     celebrationSubtitle: 'Your Quality Passport is complete.',
     editName: 'Edit name',
     holderLabel: 'Name on your passport',
-    share: 'Share',
-    shareText: 'Four pillars, four stars: my Quality Passport is complete. #WorldQualityWeek',
-    copied: 'Copied. Paste it anywhere.',
+    share: 'Share',                        // shares the passport PDF (downloads it where sharing files is not possible)
     download: 'Download my passport',
-    saveOrShare: 'Share PDF',
     preparing: 'Preparing…',
     pdfFallback: 'The PDF tool could not load. Your passport was saved as an image instead.',
     close: 'Done',

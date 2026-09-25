@@ -51,7 +51,8 @@ export async function downloadPassport(name) {
   }
 }
 
-/** Most reliable path on iOS and in in-app browsers. Returns false if it could not share. */
+/** Shares the PDF through the share sheet. True if shared or cancelled by the user,
+ *  false if it could not share (then the caller downloads it instead). */
 export async function sharePassportFile(name) {
   try {
     const blob = (await buildPdf(name)).output('blob');

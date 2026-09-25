@@ -4,7 +4,6 @@ import { CONFIG } from '../../config.js';
 import { IDS } from '../env.js';
 import { canShareFiles, downloadPassport, sharePassportFile, preloadPdf } from '../passport/pdf.js';
 import { go, register } from '../router.js';
-import { shareAchievement } from '../share.js';
 import { state, save } from '../state.js';
 import { T, busy, starSvg } from '../ui.js';
 import { $, fmt, fmtDate, nameFromEmail } from '../util.js';
@@ -42,15 +41,16 @@ $('download-btn').addEventListener('click', async (e) => {
   busy(btn, false);
 });
 
-$('save-share-btn').addEventListener('click', async (e) => {
+// Share = the passport PDF through the phone's share sheet (Teams, mail, Files…).
+// Where files cannot be shared (most desktops), it downloads the PDF instead.
+$('share-btn').addEventListener('click', async (e) => {
   const btn = e.currentTarget;
   busy(btn, true);
-  const ok = await sharePassportFile(holderName());
+  const shared = canShareFiles() && await sharePassportFile(holderName());
+  if (!shared) await downloadPassport(holderName());
   busy(btn, false);
-  if (!ok) $('download-btn').click();
 });
 
-$('share-btn').addEventListener('click', shareAchievement);
 $('close-btn').addEventListener('click', () => go('passport'));
 
 register('celebration', {
@@ -71,6 +71,5 @@ register('celebration', {
     $('cert-line').textContent = fmt(T.docLine, { program: CONFIG.PROGRAM });
     $('cert-date').textContent = fmtDate(completedOn(), 'long');
     preloadPdf();
-    $('save-share-btn').hidden = !canShareFiles();
   },
 });
