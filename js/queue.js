@@ -47,10 +47,14 @@ export function startAutoFlush() {
   window.addEventListener('online', flush);
   document.addEventListener('visibilitychange', () => { if (!document.hidden) flush(); });
   setInterval(() => { if (state.pending.length) flush(); }, RETRY_EVERY_MS);
+  // Page being closed or hidden with answers still queued: hand them to the browser.
+  const lastChance = () => { if (state.pending.length) backend.beacon(state.pending); };
+  window.addEventListener('pagehide', lastChance);
+  document.addEventListener('visibilitychange', () => { if (document.hidden) lastChance(); });
 }
 
 /** Restores stars earned in another browser. Resolves to true when the backend answered.
- *  Apps Script can be slow to wake up (up to ~30 s seen), hence the generous timeout. */
+ *  Generous timeout for poor event wifi. */
 export async function restoreStars(timeoutMs = 15000) {
   try {
     const before = JSON.stringify(state.stars);

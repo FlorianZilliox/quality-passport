@@ -1,13 +1,14 @@
 /* ============================================================================
    CONFIG — the only file to edit after delivery.
-   - SCRIPT_URL: the Apps Script web app URL (ends with /exec).
-     Empty = mock mode (answers stay in this browser). On localhost the mock is always
-     used so tests never write to the real Sheet; add ?live=1 to test the real one locally.
-   - Placeholder texts ("TODO", "lorem ipsum") and an empty SCRIPT_URL are reported
+   - API_URL: the Cloudflare Worker (worker/). It stores answers and copies them to the
+     Google Sheet every minute. Empty = mock mode (answers stay in this browser).
+     On localhost the mock is always used so tests never write real data; add ?live=1
+     to use the real API locally.
+   - Placeholder texts ("TODO", "lorem ipsum") and an empty API_URL are reported
      as a warning in the browser console (never shown to participants).
    ========================================================================== */
 export const CONFIG = {
-  SCRIPT_URL: 'https://script.google.com/macros/s/AKfycbzDTdpoL5_6mBIXthxlWw5TwwDQQZV3ahH8FeL8g1b0rTMb3lqSg-o_sDfGZLWoC_BqKQ/exec',
+  API_URL: 'https://quality-passport-api.videoclubz.workers.dev',
   EVENT: 'World Quality Week 2026',
   PROGRAM: 'Quality Powering Performance',   // the programme behind the 4 pillars
   LOGO: 'assets/logo.png',                   // programme visual, shown in full on the home screen

@@ -25,7 +25,7 @@ export function checkConfig() {
   const ids = CONFIG.PILLARS.map((p) => p.id).sort().join(',');
   if (ids !== '1,2,3,4') problems.push('PILLARS must have ids 1 to 4');
   if (CONFIG.PILLARS.some((p) => placeholder.test(`${p.name} ${p.question}`))) problems.push('pillar texts are placeholders');
-  if (MOCK) problems.push(IS_LOCAL ? 'mock mode: answers stay in this browser' : 'SCRIPT_URL is empty, answers are not saved');
+  if (MOCK) problems.push(IS_LOCAL ? 'mock mode: answers stay in this browser' : 'API_URL is empty, answers are not saved');
   if (problems.length) console.warn('[Quality Passport] Config: ' + problems.join(' · '));
 }
 

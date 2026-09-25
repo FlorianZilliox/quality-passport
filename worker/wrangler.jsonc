@@ -1,0 +1,23 @@
+{
+  "$schema": "../node_modules/wrangler/config-schema.json",
+  "name": "quality-passport-api",
+  "main": "src/index.js",
+  "compatibility_date": "2026-09-20",
+  "workers_dev": true,
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "quality-passport",
+      "database_id": "991a9867-4b0b-4115-bba5-92d01759e7ef",
+      "migrations_dir": "migrations"
+    }
+  ],
+  // Every minute, new answers are copied to the Google Sheet in one batch.
+  "triggers": { "crons": ["* * * * *"] },
+  "vars": {
+    // Apps Script web app (apps-script/Code.gs, a deployment with the "batch" action).
+    // Empty = no copy to the Sheet (answers stay in D1).
+    "SHEET_URL": ""
+  },
+  "observability": { "enabled": true }
+}

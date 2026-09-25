@@ -1,4 +1,4 @@
-// Fake backend used when CONFIG.SCRIPT_URL is empty.
+// Fake backend used when CONFIG.API_URL is empty, and always on localhost (unless ?live=1).
 // Rows live in localStorage 'wqw_mock_sheet' with the Sheet's column order:
 // [Timestamp, Email, Pillar, Answer, ClientId]. ?mockfail=1 makes every call fail.
 import { CONFIG } from '../../config.js';
@@ -31,3 +31,5 @@ export async function stars(email) {
   rows().forEach(([ts, e, p]) => { if (e === email && !out[p]) out[p] = ts; });
   return out;
 }
+
+export function beacon() { /* the mock has nothing to deliver after the page closes */ }

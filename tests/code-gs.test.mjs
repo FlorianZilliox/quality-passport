@@ -136,3 +136,20 @@ test('a resend with the same ClientId is not appended twice', () => {
   post({ email: 'a@x.co', p: 3, answer: 'other', id: 'def-456' });
   assert.equal(tabs.Responses.rows.length, 3); // header + 2
 });
+
+test('batch from the Worker: one write, known ids skipped, invalid rows dropped', () => {
+  const { ctx, tabs, post } = load();
+  post({ email: 'a@x.co', p: 1, answer: 'single', id: 'id-1' });
+  const out = JSON.parse(ctx.doPost({ postData: { contents: JSON.stringify({ action: 'batch', rows: [
+    { id: 'id-1', ts: '2026-10-05T09:00:00Z', email: 'a@x.co', pillar: 1, answer: 'already there' },
+    { id: 'id-2', ts: '2026-10-05T09:01:00Z', email: 'B@x.co', pillar: 2, answer: '=cmd' },
+    { id: 'id-3', ts: '2026-10-05T09:02:00Z', email: 'c@x.co', pillar: 7, answer: 'bad pillar' },
+    { id: 'id-2', ts: '2026-10-05T09:03:00Z', email: 'b@x.co', pillar: 2, answer: 'same id twice' },
+  ] }) } }).body);
+  assert.deepEqual(plain(out), { ok: true, added: 1 });
+  const rows = plain(tabs.Responses.rows.slice(1));
+  assert.equal(rows.length, 2);
+  assert.deepEqual(rows[1].slice(1), ['b@x.co', 2, "'=cmd", 'id-2']);
+  const stars = plain(tabs.Stars.rows.slice(1).filter((r) => r[0]));
+  assert.deepEqual(stars.map((r) => r[0]), ['a@x.co', 'b@x.co']);
+});

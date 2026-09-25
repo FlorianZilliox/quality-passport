@@ -10,6 +10,7 @@
  *
  * Routes
  *   POST (text/plain JSON {email, p, answer, id}) -> {ok:true[, duplicate:true]} | {ok:false, error:'invalid'|'busy'}
+ *   POST {action:'batch', rows:[{id, ts, email, pillar, answer}]} -> {ok:true, added:n}  (from the Cloudflare Worker)
  *   GET  ?email=...                                -> {stars: {"1": "ISO date of first answer", ...}}
  */
 
@@ -22,6 +23,7 @@ const EMAIL_RE = /^[^@\s=+\-][^@\s]*@[^@\s]+\.[^@\s]+$/;
 function doPost(e) {
   let d;
   try { d = JSON.parse(e.postData.contents); } catch (err) { return json({ ok: false, error: 'invalid' }); }
+  if (d && d.action === 'batch') return saveBatch_(d.rows);
   const email = String(d.email || '').trim().toLowerCase().slice(0, 254);
   const p = Number(d.p);
   let answer = String(d.answer || '').trim().slice(0, MAX_ANSWER);
@@ -49,6 +51,42 @@ function doPost(e) {
   // The answer is saved. Stars is refreshed outside the lock, once for a burst of answers.
   try { refreshStars_(tabs); } catch (err) { /* Stars catches up on the next answer */ }
   return json({ ok: true });
+}
+
+/** Batch from the Cloudflare Worker: many answers in one call, written with one setValues.
+ *  Rows whose ClientId is already in the Sheet are skipped (the Worker resends until it gets ok). */
+function saveBatch_(rows) {
+  if (!Array.isArray(rows)) return json({ ok: false, error: 'invalid' });
+  const lock = LockService.getScriptLock();
+  let tabs, added = 0;
+  try {
+    if (!lock.tryLock(30000)) return json({ ok: false, error: 'busy' });
+    tabs = sheets_();
+    const last = tabs.responses.getLastRow();
+    const known = {};
+    if (last >= 2) tabs.responses.getRange(2, 5, last - 1, 1).getValues().forEach(function (r) { known[String(r[0])] = true; });
+    const values = [];
+    rows.forEach(function (r) {
+      const email = String(r.email || '').trim().toLowerCase().slice(0, 254);
+      const p = Number(r.pillar);
+      let answer = String(r.answer || '').trim().slice(0, MAX_ANSWER);
+      const id = String(r.id || '').replace(/[^A-Za-z0-9-]/g, '').slice(0, 40);
+      if (!id || known[id] || !EMAIL_RE.test(email) || [1, 2, 3, 4].indexOf(p) === -1 || !answer) return;
+      if (/^[=+\-@]/.test(answer)) answer = "'" + answer; // blocks formula injection
+      known[id] = true;
+      const ts = new Date(r.ts);
+      values.push([isNaN(ts) ? new Date() : ts, email, p, answer, id]);
+    });
+    if (values.length) tabs.responses.getRange(last + 1, 1, values.length, 5).setValues(values);
+    added = values.length;
+    SpreadsheetApp.flush();
+  } catch (err) {
+    return json({ ok: false, error: 'busy' });
+  } finally {
+    lock.releaseLock();
+  }
+  if (added) { try { rebuildStars_(tabs); } catch (err) { /* catches up next time */ } }
+  return json({ ok: true, added: added });
 }
 
 /** Rebuilds Stars unless another execution is already doing it; that one then runs
